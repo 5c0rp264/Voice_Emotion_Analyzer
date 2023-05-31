@@ -62,7 +62,7 @@
 
 
  <div class="preloader">
-    <h2>Timbre<span>.</span></h2>
+    <h2>S-CORP<span>.</span>it</h2>
     <div class="preloader-wrapper big active">
         <div class="spinner-layer spinner-blue">
             <div class="circle-clipper left">
@@ -129,14 +129,15 @@
     <div class="hero-caption">
         
         <div class="hero-text">
-            <h2>Emotion of Call Agent</h2><br><br>
+            <h2>Résultat de l'IA</h2><br><br>
             <div class="table-responsive container" style="width: 40%;">
                 <table class="table">
                   <thead>
                       <tr>
-                        <th scope="col">Agent Name</th>
+                        <th scope="col">Prediction</th>
                         <!-- <th scope="col">Label</th> -->
                         <th scope="col">Accuracy</th>
+                        <th scope="col">Audio</th>
                       </tr>
                     </thead>
                     <tbody id="response_body">
@@ -176,13 +177,15 @@
             console.log(response_json.results[result].emotion);
             console.log(response_json.results[result].file_path);
             var emot = response_json.results[result].emotion;
+            var accuracy = response_json.results[result].accuracy;
             var emot = emot.replace('[\'','');
             emot = emot.replace('\']','');
             emot = emot.replace('_',' ');
             emot = toTitleCase(emot);
             emotions.push(emot);
-            res_body += '<tr><th scope="row"></th><td>'+emot+'</td><td>';
-            res_body += '<audio id="player" controls> <source id="audio_src" src="../../'+response_json.results[result].file_path+'" type="'+response_json.results[result].file_type+'"> </audio></td></tr>';
+            res_body += '<tr><td>'+emot+'</td>';
+            res_body += '<td>'+accuracy+'</td>';
+            res_body += '<td><audio id="player" controls> <source id="audio_src" src="../../'+response_json.results[result].file_path+'" type="'+response_json.results[result].file_type+'"> </audio></td></tr>';
         }
         document.getElementById('response_body').innerHTML = res_body;
         document.getElementById('avg_emotion').innerHTML = mode(emotions);

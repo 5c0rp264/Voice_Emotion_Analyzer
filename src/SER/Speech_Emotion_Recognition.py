@@ -265,6 +265,7 @@ def initialize():
             lb = "_surprised"
         else:
             lb = "_none"
+
             
         # Add gender to the label 
         label8_list.append(data_df.gender[i]  + lb)
@@ -273,8 +274,13 @@ def initialize():
 
 
     # Select the label set you want by commenting the unwanteds.
+    labelcustom_list = ['female_angry', 'female_calm', 'female_fearful', 'female_happy', 'female_sad', 'male_angry', 'male_calm', 'male_fearful', 'male_happy', 'male_sad']
 
-    data_df['label'] = label5_list
+
+    #default
+    # data_df['label'] = label5_list
+    # to test
+    data_df['label'] = labelcustom_list
     data_df.head()
 
 
@@ -685,7 +691,12 @@ def initialize():
 
     # Visualize Confusion Matrix 
 
-    class_names = ['male_angry', 'male_calm', 'male_fearful', 'male_happy', 'male_sad']
+    #default
+    # class_names = ['male_angry', 'male_calm', 'male_fearful', 'male_happy', 'male_sad']
+
+    #adapted to test
+    class_names = ['female_angry', 'female_calm', 'female_fearful', 'female_happy', 'female_sad', 'male_angry', 'male_calm', 'male_fearful', 'male_happy', 'male_sad']
+
     
     return model, lb
 
@@ -695,15 +706,27 @@ def analyze(model, lb, file):
     data, sampling_rate = librosa.load("./"+file)
     ipd.Audio("./"+file)
 
+    #default
+    # X, sample_rate = librosa.load("./"+file
+                                # ,res_type='kaiser_fast'
+                                # ,duration=3
+                                # ,sr=44100
+                                # ,offset=0.5)
+    # adapted to test
     X, sample_rate = librosa.load("./"+file
-                                ,res_type='kaiser_fast'
-                                ,duration=3
-                                ,sr=44100
-                                ,offset=0.5)
+                            ,res_type='kaiser_fast'
+                            ,duration=2.5
+                            ,sr=44100
+                            ,offset=0.5)
+
 
 
     sample_rate = np.array(sample_rate)
-    mfcc_test = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40),axis=0)
+    # default
+    # mfcc_test = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40),axis=0)
+    # adapted to https://github.com/MiteshPuthran/Speech-Emotion-Analyzer/blob/master/final_results_gender_test.ipynb
+    mfcc_test = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
+
     mfcc_test = pd.DataFrame(data=mfcc_test).T
     mfcc_test
 
@@ -712,10 +735,22 @@ def analyze(model, lb, file):
                             batch_size=16, 
                             verbose=0)
 
-    pred_test
+    print(pred_test)
 
     result = pred_test.argmax(axis=1)
+    print("result 1 :")
+    print(result)
     result = result.astype(int).flatten()
-    result = (lb.inverse_transform((result)))
+    
+    print("result 2 :")
+    print(result)
+
+    #default
+    # result = (lb.inverse_transform((result)))
+    #for test model
+    class_names = ['female_angry', 'female_calm', 'female_fearful', 'female_happy', 'female_sad', 'male_angry', 'male_calm', 'male_fearful', 'male_happy', 'male_sad']
+    result_txt = class_names[result[0]]
+
+
     result
-    return result
+    return result_txt, pred_test[0][result[0]]

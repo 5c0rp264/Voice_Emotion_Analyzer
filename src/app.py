@@ -9,15 +9,17 @@ from uuid import uuid4
 from pydub import AudioSegment
 from pydub.utils import make_chunks
 
-from SER.Speech_Emotion_Recognition import initialize
-from SER.Speech_Emotion_Recognition import analyze
+from SER.Speech_Emotion_Recognition import *
+
+from sklearn.preprocessing import LabelEncoder
+
 
 app = Flask(__name__)
 CORS(app)
 
 #model, lb = initialize()
 lb = LabelEncoder()
-lb.classes_ = numpy.load('classes.npy')
+lb.classes_ = np.load('classes.npy', allow_pickle=True)
 
 model = tf.keras.models.load_model('model.h5')
 
@@ -28,6 +30,23 @@ def check():
     fileId = datetime.now().strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
     filePath = "clips/"+fileId+"."+ext
     f.save(filePath)
+
+    if ext.lower() == 'm4a':
+        #convert to wav if filetype is m4a
+        try : 
+            track = AudioSegment.from_file(filePath,
+                        ext)
+            wav_filename = fileId+".wav"
+            wav_path = "clips/"+ wav_filename
+            print('CONVERTING: ' + str(filePath))
+            file_handle = track.export(wav_path, format='wav')
+            os.remove(filePath)
+            #update variables to get wav file
+            ext="wav"
+            filePath = wav_path
+        except :
+            print("ERROR CONVERTING " + str(filePath))
+
     myaudio = AudioSegment.from_file("clips/"+fileId+"."+ext , "wav") 
     chunk_length_ms = 5000 # pydub calculates in millisec
     chunks = make_chunks(myaudio, chunk_length_ms) #Make chunks of one sec
@@ -44,12 +63,12 @@ def check():
     response = '{"results": ['
     first = True
     for filename in filenames:
-        emotion = str(analyze(model, lb, filePath))
+        emotion, accuracy = analyze(model, lb, filePath)
         if first:
-            response += '{"file_path": "'+filename+'", "file_type": "audio/wav", "emotion": "'+emotion+'"}'
+            response += '{"file_path": "'+filename+'", "file_type": "audio/wav", "emotion": "'+emotion+'" , "accuracy": "'+"{:10.4f}".format(accuracy)+'"}'
             first = False
         else:
-            response += ', {"file_path": "'+filename+'", "file_type": "audio/wav", "emotion": "'+emotion+'"}'
+            response += ', {"file_path": "'+filename+'", "file_type": "audio/wav", "emotion": "'+emotion+'" , "accuracy": "'+"{:10.4f}".format(accuracy)+'"}'
         
     response += ']}'
     return response
