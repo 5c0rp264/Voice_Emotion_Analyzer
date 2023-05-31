@@ -1,3 +1,12 @@
+## Modifications from the original forked repo
+
+The model has been changed to the one developped and tested on this link : 
+https://github.com/MiteshPuthran/Speech-Emotion-Analyzer/tree/master
+
+Few changes on the texts have also been made to adapt for a personnal use. 
+A code to allow treatment of m4a file has been included to allow for an automated conversion in wav file.
+
+
 ## About
 
 This is a simple web application that can be used to upload an audio file containing vocals and detect the emotion of the vocals. The uploaded audio file will be chopped into mini clips and analyze each mini clip for the emotion. The accuracy is not very good as this was done within a limited time period and with a limited dataset provided.<br>
