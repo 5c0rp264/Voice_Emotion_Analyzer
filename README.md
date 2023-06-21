@@ -6,6 +6,8 @@ https://github.com/MiteshPuthran/Speech-Emotion-Analyzer/tree/master
 Few changes on the texts have also been made to adapt for a personnal use. 
 A code to allow treatment of m4a file has been included to allow for an automated conversion in wav file.
 
+The purpose of this repo is to help the realization of a master's thesis on emotion analysis of a Paris Dauphine student.
+
 
 ## About
 
